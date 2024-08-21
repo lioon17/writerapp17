@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Summary</title>
+    <link rel="stylesheet" href="styleOS.css">
+</head>
+<body>
+    <div class="order-summary-container">
+        <h2>Your Order Summary</h2>
+        <ul id="orderSummaryList">
+            <!-- Order summary items will be dynamically added here -->
+        </ul>
+        <div class="total-price">
+            <span>Total price: <strong id="totalPrice">$0.00</strong></span>
+        </div>
+        <div id="paypal-button-container"></div>
+    </div>
+    
+    <script>
+       document.addEventListener('DOMContentLoaded', () => {
+        const orderSummary = JSON.parse(sessionStorage.getItem('orderSummary'));
+
+        if (orderSummary) {
+            const orderSummaryList = document.getElementById('orderSummaryList');
+            const totalPriceElement = document.getElementById('totalPrice');
+
+            for (const [key, value] of Object.entries(orderSummary)) {
+                if (!['_id', 'userId', 'paymentStatus', 'createdAt', '__v'].includes(key)) {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${key.replace(/([A-Z])/g, ' $1')}: ${value}`;
+                    orderSummaryList.appendChild(listItem);
+                }
+            }
+
+            const totalPrice = orderSummary.totalPrice || 0;
+            totalPriceElement.textContent = `$${parseFloat(totalPrice).toFixed(2)}`;
+        }
+
+        // Initialize PayPal Buttons
+        initPayPalButtons();
+    });
+
+   
+    async function initPayPalButtons() {
+    try {
+        const response = await fetch('/paypal-client-id');
+        const data = await response.json();
+        const clientId = data.clientId;
+
+        const script = document.createElement('script');
+        script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=USD`;
+        script.onload = function () {
+            paypal.Buttons({
+                createOrder: function (data, actions) {
+                    const totalPriceElement = document.getElementById('totalPrice');
+                    const totalPrice = parseFloat(totalPriceElement.textContent.replace('$', ''));
+
+                    return actions.order.create({
+                        purchase_units: [{
+                            amount: {
+                                value: totalPrice.toFixed(2)
+                            }
+                        }],
+                        application_context: {
+                            brand_name: 'WritersBlock',
+                            shipping_preference: 'NO_SHIPPING', // No shipping address required
+                            cancel_url: 'https://fbqpgfgp-3000.euw.devtunnels.ms/', // URL to redirect to if the user cancels
+                            return_url: 'https://fbqpgfgp-3000.euw.devtunnels.ms/' // URL to redirect to after payment approval
+                        }
+                    });
+                },
+                onApprove: function (data, actions) {
+                    return actions.order.capture().then(function (details) {
+                        alert('Transaction completed by ' + details.payer.name.given_name);
+                        submitPaymentDetails(details);  // Pass PayPal details to submitPaymentDetails
+                    });
+                },
+                onCancel: function (data) {
+                    // Handle the payment cancellation here
+                    alert('Payment was canceled. You have been returned to the store.');
+                    window.location.href = '/order'; // Redirect to a cancel page or handle the cancel action
+                },
+                onError: function (err) {
+                    console.error('Error during the transaction', err);
+                    alert('An error occurred during the transaction. Please try again.');
+                }
+            }).render('#paypal-button-container');
+        };
+        document.body.appendChild(script);
+    } catch (error) {
+        console.error('Failed to fetch PayPal client ID', error);
+    }
+}
+
+
+    async function submitPaymentDetails(paypalDetails) {
+    const orderSummary = JSON.parse(sessionStorage.getItem('orderSummary'));
+    const orderId = sessionStorage.getItem('orderId');
+    orderSummary.paypalDetails = paypalDetails;
+    orderSummary.paymentStatus = 'Paid';
+
+    try {
+        const response = await fetch(`/order/payment`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ ...orderSummary, _id: orderId }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            alert('Payment successful! Redirecting to your Account');
+            localStorage.setItem('paymentCompleted', 'true');
+            window.location.href = `/customer`;
+        } else {
+            alert('Failed to submit payment details: ' + data.message);
+        }
+    } catch (error) {
+        console.error('Error submitting payment details:', error);
+        alert('Failed to submit payment details');
+    }
+}
+
+
+    window.addEventListener('beforeunload', async function(event) {
+        const paymentCompleted = localStorage.getItem('paymentCompleted') === 'true';
+        const orderSummary = JSON.parse(sessionStorage.getItem('orderSummary'));
+        const orderId = sessionStorage.getItem('orderId');
+
+        if (orderSummary && !paymentCompleted) {
+            orderSummary.paymentStatus = 'Not Paid';
+            try {
+                await fetch(`/order/update`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ ...orderSummary, _id: orderId }),
+                });
+            } catch (error) {
+                console.error('Error updating unpaid order:', error);
+            }
+        }
+        sessionStorage.removeItem('orderSummary');
+        localStorage.removeItem('paymentCompleted');
+    });
+    
+  </script>
+</body>
+</html>

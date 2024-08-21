@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="style1.css">
+</head>
+<body>
+    <div class="orders-container">
+        <div class="orders-sidebar">
+            <div class="orders-sidebar-header">
+                <a href="/">
+                    <h1>WritersBlock</h1>
+                </a> 
+                <% if (user && user.username) { %>
+                    <p>Welcome back, <%= user.username %>!</p>
+                <% } else { %>
+                    <p>Welcome back!</p>
+                <% } %>
+            </div>
+            <div class="orders-sidebar-menu">
+                <ul>
+                    <li><a href="/order"><i class="fas fa-plus"></i> New Order</a></li>
+                    <li><a href="#" onclick="showSection('orders')"><i class="fas fa-shopping-cart"></i> My Orders</a></li>
+                    <li><a href="#" onclick="showSection('feedback')"><i class="fas fa-comments"></i> Feedback</a></li>
+                    <li><a href="#" onclick="showSection('referral')"><i class="fas fa-user-plus"></i> Referral</a></li>
+                    <li><a href="#" onclick="showSection('settings-section')"><i class="fas fa-cog"></i> Settings</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="orders-main-content">
+            <div class="orders-main-header">
+                <div class="orders-header-left">
+                    <a href="#">Dashboard</a>
+                    <a href="#">Profile</a>
+                </div>
+                <div class="orders-header-right">
+                    <i class="fas fa-bell"></i>
+                    <i class="fas fa-user"></i>
+                    <img class="orders-profile-picture" src="https://via.placeholder.com/40" alt="Profile Picture">
+                </div>
+            </div>
+            <div id="orders" class="orders-content-section active">
+                <div class="orders-section">
+                    <h2>My Orders</h2>
+                    <div class="orders-tabs">
+                        <button class="orders-tab-button active" onclick="showTab('all-orders')">All Orders</button>
+                        <button class="orders-tab-button" onclick="showTab('pending-orders')">Pending Payment</button>
+                    </div>
+                    <div id="all-orders" class="orders-tab-content active">
+                        <% if (orders && orders.length > 0) { %>
+                            <% orders.forEach(order => { %>
+                                    <div class="order-card" onclick="toggleOrderDetails('<%= order._id %>')">
+                                        <div class="order-summary">
+                                            <p>Order ID: <%= order.orderId %></p>
+                                            <p>Urgency: <span id="countdown-<%= order._id %>"></span></p>
+                                            <p>Pages: <%= order.pageCount %></p>
+                                            <p>Price: $<%= order.totalPrice %></p>
+                                            <% if (order.paymentStatus === 'Not Paid') { %>
+                                                <div class="payment-status">
+                                                    <span class="notification not-paid">Not Paid</span>
+                                                    <button class="button-57" role="button" onclick="payOrder('<%= order._id %>')">
+                                                        <span class="text">Pay</span><span>$<%= order.totalPrice %></span>
+                                                    </button>
+                                                </div>
+                                            <% } %>
+                                        </div>
+                                        <div id="order-details-<%= order._id %>" class="order-full-details hidden">
+                                            <p>Service Type: <%= order.serviceType %></p>
+                                            <p>Paper Type: <%= order.paperType %></p>
+                                            <p>Subject Area: <%= order.subjectArea %></p>
+                                            <p>Topic: <%= order.topic %></p>
+                                            <p>Details: <%= order.paperDetails %></p>
+                                            <p>References: <%= order.references %></p>
+                                            <p>Academic Level: <%= order.academicLevel %></p>
+                                            <p>Format: <%= order.paperFormat %></p>
+                                            <p>Spacing: <%= order.spacing %></p>
+                                            <p>Writer Level: <%= order.writerLevel %></p>
+                                            <p>Additional Instructions: <%= order.additionalInstructions %></p>
+                                            <p>Services: <%= order.additionalServices.join(', ') %></p>
+                                            <p>Notifications: <%= order.notifications.join(', ') %></p>
+                                            <p>Email: <%= order.email %></p>
+                                            <p>Phone Number: <%= order.phoneNumber %></p>
+                                            <p>Contact Method: <%= order.preferredContactMethod %></p>
+                                           
+                                            <div>
+                                                <p>Additional Materials:</p>
+                                                <ul id="fileList">
+                                                    <% if (order.files && order.files.length > 0) { %>
+                                                        <% order.files.forEach(file => { %>
+                                                            <li><a href="/uploads/<%= file %>" target="_blank"><%= file %></a></li>
+                                                        <% }) %>
+                                                    <% } else { %>
+                                                        <li>No additional materials uploaded.</li>
+                                                    <% } %>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                              
+                            <% }) %>
+                        <% } else { %>
+                            <p>No orders found.</p>
+                        <% } %>
+                    </div>
+
+                    <div id="pending-orders" class="orders-tab-content">
+                        <% if (orders && orders.length > 0) { %>
+                            <% orders.filter(order => order.paymentStatus === 'Not Paid').forEach(order => { %>
+                                    <div class="order-card" onclick="toggleOrderDetails('<%= order._id %>')">
+                                        <div class="order-summary">
+                                            <p>Order ID: <%= order.orderId %></p>
+                                            <p>Urgency: <%= order.urgency %></p>
+                                            <p>Pages: <%= order.pageCount %></p>
+                                            <p>Price: $<%= order.totalPrice %></p>
+                                            <div class="payment-status">
+                                                <span class="notification not-paid">Not Paid</span>
+                                                <button class="button-57" role="button" onclick="payOrder('<%= order._id %>')">
+                                                    <span class="text">Pay</span><span>$<%= order.totalPrice %></span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div id="order-details-<%= order._id %>" class="order-full-details hidden">
+                                            <p>Service Type: <%= order.serviceType %></p>
+                                            <p>Paper Type: <%= order.paperType %></p>
+                                            <p>Subject Area: <%= order.subjectArea %></p>
+                                            <p>Topic: <%= order.topic %></p>
+                                            <p>Details: <%= order.paperDetails %></p>
+                                            <p>References: <%= order.references %></p>
+                                            <p>Academic Level: <%= order.academicLevel %></p>
+                                            <p>Format: <%= order.paperFormat %></p>
+                                            <p>Spacing: <%= order.spacing %></p>
+                                            <p>Writer Level: <%= order.writerLevel %></p>
+                                            <p>Additional Instructions: <%= order.additionalInstructions %></p>
+                                            <p>Services: <%= order.additionalServices.join(', ') %></p>
+                                            <p>Notifications: <%= order.notifications.join(', ') %></p>
+                                            <p>Email: <%= order.email %></p>
+                                            <p>Phone Number: <%= order.phoneNumber %></p>
+                                            <p>Contact Method: <%= order.preferredContactMethod %></p>
+                                           
+                                            <div>
+                                                <p>Additional Materials:</p>
+                                                <ul id="fileList">
+                                                    <% if (order.files && order.files.length > 0) { %>
+                                                        <% order.files.forEach(file => { %>
+                                                            <li><a href="/uploads/<%= file %>" target="_blank"><%= file %></a></li>
+                                                        <% }) %>
+                                                    <% } else { %>
+                                                        <li>No additional materials uploaded.</li>
+                                                    <% } %>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                              
+                            <% }) %>
+                        <% } else { %>
+                            <p>No pending orders found.</p>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <div id="feedback" class="orders-content-section">
+                <div class="feedback-section">
+                    <h2>Feedback</h2>
+                    <form id="feedbackForm" class="feedback-form" onsubmit="submitFeedback(event)">
+                        <div class="form-group">
+                            <label for="orderId">Order ID</label>
+                            <input type="text" id="orderId" name="orderId" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="feedbackText">Feedback</label>
+                            <textarea id="feedbackText" name="feedbackText" rows="4" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="rating">Rating</label>
+                            <input type="number" id="rating" name="rating" min="1" max="5" required>
+                        </div>
+                        <button type="submit">Submit Feedback</button>
+                    </form>
+                    <div class="feedback-table-wrapper">
+                        <table class="feedback-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Feedback</th>
+                                    <th>Rating</th>
+                                </tr>
+                            </thead>
+                            <tbody id="feedbackTableBody">
+                                <!-- Feedback items will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="no-feedback">
+                        <i class="fas fa-info-circle"></i>
+                        <p>No feedback yet.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="referral" class="orders-content-section">
+                <div class="referral-section">
+                    <h2>Referral Program</h2>
+                    <p>Invite your friends and get rewards!</p>
+                    <div class="referral-link">
+                        <input type="text" value="https://fbqpgfgp-3000.euw.devtunnels.ms/" readonly>
+                        <button onclick="copyReferralLink()">Copy</button>
+                    </div>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="whatsapp"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                    <div class="referral-code">
+                        Your referral code: <strong>N/A</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        
+
+
+        // Make sure orders is defined and available
+        const orders = <%- JSON.stringify(orders) %>;
+
+        function toggleOrderDetails(orderId) {
+            var detailsDiv = document.getElementById('order-details-' + orderId);
+            if (detailsDiv.classList.contains('hidden')) {
+                detailsDiv.classList.remove('hidden');
+                detailsDiv.classList.add('visible');
+            } else {
+                detailsDiv.classList.remove('visible');
+                detailsDiv.classList.add('hidden');
+            }
+        }
+    
+        function showSection(sectionId) {
+            document.querySelectorAll('.orders-content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+        }
+    
+        function showTab(tabId) {
+            document.querySelectorAll('.orders-tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.orders-tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+            document.querySelector(`[onclick="showTab('${tabId}')"]`).classList.add('active');
+        }
+    
+        function copyReferralLink() {
+            const referralLinkInput = document.querySelector('.referral-link input');
+            referralLinkInput.select();
+            referralLinkInput.setSelectionRange(0, 99999); // For mobile devices
+            document.execCommand('copy');
+            alert('Referral link copied to clipboard: ' + referralLinkInput.value);
+        }
+    
+        function payOrder(orderId) {
+            // Fetch the order details by orderId
+            const order = orders.find(order => order._id === orderId);
+            if (order) {
+                // Store order details in session storage
+                sessionStorage.setItem('orderSummary', JSON.stringify(order));
+                // Redirect to the order summary page for payment
+                window.location.href = '/order-summary?orderId=' + orderId;
+            }
+        }
+    
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add event listeners to sidebar links
+            document.querySelectorAll('.orders-sidebar-menu a').forEach(link => {
+                if (link.href.includes('/order')) {
+                    link.addEventListener('click', () => window.location.href = link.href);
+                } else {
+                    link.addEventListener('click', function(event) {
+                        event.preventDefault();
+                        const sectionId = this.getAttribute('onclick').match(/showSection\('(.+)'\)/)[1];
+                        showSection(sectionId);
+                    });
+                }
+            });
+        });
+    
+        function submitFeedback(event) {
+            event.preventDefault();
+    
+            const orderId = document.getElementById('orderId').value;
+            const feedbackText = document.getElementById('feedbackText').value;
+            const rating = document.getElementById('rating').value;
+    
+            fetch('/api/submitFeedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ orderId, feedbackText, rating }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Append the new feedback to the table
+                    const feedbackTableBody = document.getElementById('feedbackTableBody');
+                    const newRow = document.createElement('tr');
+                    newRow.innerHTML = `
+                        <td>${orderId}</td>
+                        <td>${feedbackText}</td>
+                        <td>${rating}</td>
+                    `;
+                    feedbackTableBody.appendChild(newRow);
+    
+                    // Clear the form
+                    document.getElementById('feedbackForm').reset();
+                } else {
+                    alert('Failed to submit feedback');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('/api/getFeedbacks')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.feedbacks && data.feedbacks.length > 0) {
+                        const feedbackTableBody = document.getElementById('feedbackTableBody');
+                        data.feedbacks.forEach(feedback => {
+                            const newRow = document.createElement('tr');
+                            newRow.innerHTML = `
+                                <td>${feedback.orderId}</td>
+                                <td>${feedback.feedbackText}</td>
+                                <td>${feedback.rating}</td>
+                            `;
+                            feedbackTableBody.appendChild(newRow);
+                        });
+                    } else {
+                        document.querySelector('.no-feedback').style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+
+      
+
+        function startCountdown(orderId, endTime) {
+        const countdownElement = document.getElementById('countdown-' + orderId);
+        if (!endTime || isNaN(new Date(endTime).getTime())) {
+            countdownElement.innerHTML = "N/A";
+            return;
+        }
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = new Date(endTime).getTime() - now;
+
+            if (distance <= 0) {
+                countdownElement.innerHTML = "Time's up!";
+                countdownElement.style.color = 'red'; // Set text color to red
+                clearInterval(intervalId);
+                onCountdownEnd(orderId);
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            countdownElement.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        }
+
+        updateCountdown();
+        const intervalId = setInterval(updateCountdown, 1000);
+    }
+
+    function onCountdownEnd(orderId) {
+        console.log(`Countdown ended for order ${orderId}`);
+        // You can add additional actions here if needed
+    }
+
+    // Initialize countdown for each order
+    document.addEventListener('DOMContentLoaded', () => {
+        const orders = <%- JSON.stringify(orders) %>;
+        orders.forEach(order => {
+            const endTime = order.urgency; // This should be a date string or timestamp
+            startCountdown(order._id, endTime);
+        });
+    });
+        
+    </script>
+    
+       
+</body>
+</html>

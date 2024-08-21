@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="style1.css">
+</head>
+<body>
+    <div class="dashboard">
+        <div class="dashboard-header">
+            <i class="fas fa-bars menu-icon" onclick="toggleSidebar()"></i>
+            <div class="title">WritersBlock</div>
+            <div class="profile">
+                <div class="profile-info">
+                    <span>Admin</span>
+                    <span>ID: 12345</span>
+                </div>
+                <img src="https://via.placeholder.com/40" alt="Admin">
+            </div>
+        </div>
+        <div class="dashboard-main">
+            <div class="dashboard-sidebar">
+                <ul class="dashboard-menu">
+                    <li><a href="#" onclick="showSection('available-orders')" class="active"><i class="fas fa-clipboard-list"></i> Available Orders</a></li>
+                    <li><a href="#" onclick="showSection('my-stats')"><i class="fas fa-chart-line"></i> My Stats</a></li>
+                    <li><a href="#" onclick="showSection('transactions')"><i class="fas fa-exchange-alt"></i> Transactions</a></li>
+                </ul>
+            </div>
+            <div class="dashboard-sidebar-hidden hidden">
+                <ul class="dashboard-menu">
+                    <li><a href="#" onclick="showSection('available-orders')" class="active"><i class="fas fa-clipboard-list"></i> Available Orders</a></li>
+                    <li><a href="#" onclick="showSection('my-stats')"><i class="fas fa-chart-line"></i> My Stats</a></li>
+                    <li><a href="#" onclick="showSection('transactions')"><i class="fas fa-exchange-alt"></i> Transactions</a></li>
+                </ul>
+            </div>
+            <div class="dashboard-content">
+                <div id="available-orders" class="dashboard-content-section active">
+                    <h2>Available Orders</h2>
+                    <% if (orders && orders.length > 0) { %>
+                        <% orders.forEach(order => { %>
+                            <div class="order-card" data-order-id="<%= order._id %>">
+                                <div class="order-summary">
+                                    <p>Order ID: <%= order.orderId %></p>
+                                    <p>Urgency: <span id="countdown-<%= order._id %>"></span></p>
+                                    <p>Pages: <%= order.pageCount %></p>
+                                    <p>Price: $<%= order.totalPrice %></p>
+                                    <% if (order.paymentStatus === 'Not Paid') { %>
+                                        <span class="notification not-paid">Not Paid</span>
+                                    <% } %>
+                                </div>
+                                <div id="order-details-<%= order._id %>" class="order-full-details hidden">
+                                    <p>Service Type: <%= order.serviceType %></p>
+                                    <p>Paper Type: <%= order.paperType %></p>
+                                    <p>Subject Area: <%= order.subjectArea %></p>
+                                    <p>Topic: <%= order.topic %></p>
+                                    <p>Details: <%= order.paperDetails %></p>
+                                    <p>References: <%= order.references %></p>
+                                    <p>Academic Level: <%= order.academicLevel %></p>
+                                    <p>Format: <%= order.paperFormat %></p>
+                                    <p>Spacing: <%= order.spacing %></p>
+                                    <p>Writer Level: <%= order.writerLevel %></p>
+                                    <p>Email: <%= order.email %></p>
+                                    <p>Phone Number: <%= order.phoneNumber %></p>
+                                    <p>Contact Method: <%= order.preferredContactMethod %></p>
+                                    <p>Status: <%= order.status %></p>
+                                    <div>
+                                        <p>Additional Materials:</p>
+                                        <ul id="fileList">
+                                            <% if (order.files && order.files.length > 0) { %>
+                                                <% order.files.forEach(file => { %>
+                                                    <li><a href="/uploads/<%= file %>" target="_blank"><%= file %></a></li>
+                                                <% }) %>
+                                            <% } else { %>
+                                                <li>No additional materials uploaded.</li>
+                                            <% } %>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <p>No available orders found.</p>
+                    <% } %>
+                </div>
+                
+
+                <div id="my-stats" class="dashboard-content-section">
+                    <h2>My Stats</h2>
+                    <div class="stats">
+                        <div class="stat">
+                            <h3>Total Orders</h3>
+                            <p><%= orders.length %></p>
+                        </div>
+                       <div class="stat">
+                            <h3>Paid Orders</h3>
+                            <p><%= orders.filter(order => order.paymentStatus === 'Paid').length %></p>
+                        </div>
+                        <div class="stat">
+                            <h3>Unpaid Orders</h3>
+                            <p><%= orders.filter(order => order.paymentStatus === 'Not Paid').length %></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="transactions" class="dashboard-content-section">
+                    <div class="dashboard-content-header">
+                        <h2>Transactions</h2>
+                    </div>
+                    <div class="transactions-search-box">
+                        <input type="text" id="transactionSearchInput" placeholder="Search by Ref Code, Email, Amount, or Time">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    
+                    <div class="transactions-table-container">
+                        <table class="transactions-table">
+                            <thead>
+                                <tr>
+                                    <th>Ref Code</th>
+                                    <th>Number/Email</th>
+                                    <th>Amount</th>
+                                    <th>Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (transactions && transactions.length > 0) { %>
+                                    <% transactions.forEach(transaction => { %>
+                                        <tr>
+                                            <td><%= transaction.MpesaReceiptNumber || (transaction.paypalDetails ? transaction.paypalDetails.id : 'N/A') %></td>
+                                            <td><%= transaction.PhoneNumber || (transaction.paypalDetails ? transaction.paypalDetails.payer.email_address : 'N/A') %></td>
+                                            <td><%= transaction.Amount || (transaction.paypalDetails ? transaction.paypalDetails.purchase_units[0].amount.value : 'N/A') %></td>
+                                            <td><%= new Date(transaction.TransactionDate || (transaction.paypalDetails ? transaction.paypalDetails.create_time : '')).toLocaleString() %></td>
+                                        </tr>
+                                    <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="4">No transactions available</td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <script>
+        function toggleSidebar() {
+            const sidebarHidden = document.querySelector('.dashboard-sidebar-hidden');
+            sidebarHidden.classList.toggle('show');
+        }
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.dashboard-content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            document.querySelectorAll('.dashboard-sidebar .dashboard-menu a, .dashboard-sidebar-hidden .dashboard-menu a').forEach(menuItem => {
+                menuItem.classList.remove('active');
+            });
+
+            document.getElementById(sectionId).classList.add('active');
+
+            document.querySelector(`.dashboard-sidebar .dashboard-menu a[onclick="showSection('${sectionId}')"], 
+            .dashboard-sidebar-hidden .dashboard-menu a[onclick="showSection('${sectionId}')"]`).classList.add('active');
+
+            const sidebarHidden = document.querySelector('.dashboard-sidebar-hidden');
+            if (window.innerWidth <= 768) {
+                sidebarHidden.classList.remove('show');
+            }
+        }
+
+        function toggleOrderDetails(orderId) {
+            const details = document.getElementById('order-details-' + orderId);
+            if (details) {
+                details.classList.toggle('hidden');
+                details.classList.toggle('visible');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const orderCards = document.querySelectorAll('.order-card');
+            orderCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const orderId = card.getAttribute('data-order-id');
+                    toggleOrderDetails(orderId);
+                });
+            });
+        });
+
+
+
+
+        function startCountdown(orderId, endTime) {
+        const countdownElement = document.getElementById('countdown-' + orderId);
+        if (!endTime || isNaN(new Date(endTime).getTime())) {
+            countdownElement.innerHTML = "N/A";
+            return;
+        }
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = new Date(endTime).getTime() - now;
+
+            if (distance <= 0) {
+                countdownElement.innerHTML = "Time's up!";
+                clearInterval(intervalId);
+                onCountdownEnd(orderId);
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            countdownElement.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        }
+
+        updateCountdown();
+        const intervalId = setInterval(updateCountdown, 1000);
+    }
+
+    function onCountdownEnd(orderId) {
+        // Perform additional actions after countdown ends
+        console.log(`Countdown ended for order ${orderId}`);
+        // Example: send a notification or update order status
+        // You can add code here to handle what should happen next
+    }
+
+    // Initialize countdown for each order
+    document.addEventListener('DOMContentLoaded', () => {
+        const orders = <%- JSON.stringify(orders) %>;
+        orders.forEach(order => {
+            // Replace 'order.urgency' with the actual end time of the order
+            const endTime = order.urgency; // This should be a date string or timestamp
+            startCountdown(order._id, endTime);
+        });
+    });
+
+
+
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const searchInput = document.getElementById("transactionSearchInput");
+        const tableRows = document.querySelectorAll(".transactions-table tbody tr");
+
+        searchInput.addEventListener("input", function() {
+            const query = searchInput.value.toLowerCase();
+            tableRows.forEach(row => {
+                const cells = row.querySelectorAll("td");
+                const refCode = cells[0].innerText.toLowerCase();
+                const email = cells[1].innerText.toLowerCase();
+                const amount = cells[2].innerText.toLowerCase();
+                const time = cells[3].innerText.toLowerCase();
+                
+                if (refCode.includes(query) || email.includes(query) || amount.includes(query) || time.includes(query)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        });
+    });
+    </script>
+</body>
+</html>

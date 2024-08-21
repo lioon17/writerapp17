@@ -1,0 +1,579 @@
+<%- include('partials/header') %>
+
+<div class="containerpay">
+    <div class="left-container">
+        <form id="paperDetailsForm" action="/order" method="POST" enctype="multipart/form-data" >
+         
+            <div class="tab-menu">
+                <button type="button" class="tab-button active" onclick="openTab(event, 'PaperDetails')">Paper details</button>
+                <button type="button" class="tab-button" onclick="openTab(event, 'OrderPreferences')">Order preferences</button>
+                <button type="button" class="tab-button" onclick="openTab(event, 'ContactInformation')">Contact information</button>
+            </div>
+
+            <!-- Paper Details Tab -->
+            <div id="PaperDetails" class="tab-content active">
+                <h2>Paper details</h2>
+
+                <div class="form-group">
+                    <label for="serviceType">Type of service</label>
+                    <select id="serviceType" name="serviceType" onchange="updateSummary()">
+                        <option value="essay">Write My Essay</option>
+                        <option value="research-paper">Research Paper Writing Service</option>
+                        <option value="write-paper">Write My Paper</option>
+                        <option value="term-paper">Term Paper Writing Service</option>
+                        <option value="college-paper">College Paper Writing Service</option>
+                        <option value="dissertation">Dissertation</option>
+                        <option value="thesis">Thesis</option>
+                        <option value="course-work">Coursework</option>
+                        <option value="book-report">Book Report</option>
+                        <option value="personal-statement">Personal Statement</option>
+                        <option value="quizes">Quizes</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="paperType">Type of paper</label>
+                    <select id="paperType" name="paperType" onchange="updateSummary()">
+                        <option value="doctoral">Doctoral</option>
+                        <option value="research">Research Paper</option>
+                        <option value="review">Literature Review</option>
+                        <option value="case_study">Case Study</option>
+                        <option value="thesis">Thesis</option>
+                        <option value="essay">Essay</option>
+                        <option value="term-paper">Term Paper</option>
+                        <option value="dissertation">Dissertation</option>
+                        <option value="lab-report">Lab Report</option>
+                        <option value="book-report">Book Report</option>
+                        <option value="annotated-bibliography">Annotated Bibliography</option>
+                        <option value="reflective-writing">Reflective Writing</option>
+                        <option value="critical-review">Critical Review</option>
+                        <option value="coursework">Coursework</option>
+                        <option value="presentation">Presentation</option>
+                        <option value="personal-statement">Personal Statement</option>
+                        <option value="admission-essay">Admission Essay</option>
+                        <option value="scholarship-essay">Scholarship Essay</option>    
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="subjectArea">Subject area</label>
+                    <select id="subjectArea" name="subjectArea" onchange="updateSummary()">
+                        <option value="">Select subject area</option>
+                        <option value="agriculture">Agriculture & Food Science</option>
+                        <option value="art">Art & Architecture</option>
+                        <option value="biology">Biology & Life Sciences</option>
+                        <option value="business">Business & Economics</option>
+                        <option value="chemistry">Chemistry</option>
+                        <option value="communication">Communication & Mass Media</option>
+                        <option value="cultural-studies">Cultural & Area Studies</option>
+                        <option value="education">Education</option>
+                        <option value="engineering">Engineering</option>
+                        <option value="environmental-science">Environmental Science</option>
+                        <option value="history">History</option>
+                        <option value="law">Law</option>
+                        <option value="literature">Literature</option>
+                        <option value="mathematics">Mathematics</option>
+                        <option value="medicine">Medicine & Health Sciences</option>
+                        <option value="philosophy">Philosophy</option>
+                        <option value="physics">Physics</option>
+                        <option value="political-science">Political Science</option>
+                        <option value="psychology">Psychology</option>
+                        <option value="sociology">Sociology</option>
+                        <option value="technology">Technology & Computer Science</option>
+                        
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="topic">Topic</label>
+                    <input type="text" id="topic" name="topic" onchange="updateSummary()" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="paperDetails">Paper details</label>
+                    <textarea id="paperDetails" name="paperDetails" onchange="updateSummary()"></textarea >
+                </div>
+
+                <div class="file-upload-wrapper form-group">
+                    <label for="uploadFiles" class="file-label">Additional Materials</label>
+                    <div class="file-input-container">
+                        <button type="button" class="add-files-button" onclick="document.getElementById('uploadFiles').click()">+ ADD FILES</button>
+                        <input type="file" id="uploadFiles" name="additionalMaterials" class="file-input" multiple style="display: none;" onchange="handleFiles(this.files)">
+                    </div>
+                    <ul id="fileList" class="file-list"></ul>
+                </div>
+
+                <div class="form-group">
+                    <label for="paperFormat">Paper format</label>
+                    <div class="radio-group flex-group">
+                        <label class="radio-label">
+                            <input type="radio" name="paperFormat" value="MLA" checked onchange="updateSummary()">
+                            <span class="radio-text">MLA</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="paperFormat" value="APA" onchange="updateSummary()">
+                            <span class="radio-text">APA</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="paperFormat" value="Chicago" onchange="updateSummary()">
+                            <span class="radio-text">Chicago</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="paperFormat" value="Harvard" onchange="updateSummary()">
+                            <span class="radio-text">Harvard</span>
+                        </label>
+                       
+                    </div>
+                </div>
+
+               
+
+                <div class="form-group">
+                    <label for="academicLevel">Academic level</label>
+                    <div class="radio-group flex-group">
+                        <label class="radio-label">
+                            <input type="radio" name="academicLevel" value="High-School" onchange="updateSummary()">
+                            <span class="radio-text">High school</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="academicLevel" value="Freshman" onchange="updateSummary()">
+                            <span class="radio-text">Freshman</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="academicLevel" value="Sophomore" onchange="updateSummary()">
+                            <span class="radio-text">Sophomore</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="academicLevel" value="Junior" onchange="updateSummary()">
+                            <span class="radio-text">Junior</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="academicLevel" value="Senior" onchange="updateSummary()">
+                            <span class="radio-text">Senior</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="academicLevel" value="Masters" onchange="updateSummary()">
+                            <span class="radio-text">Master's</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="academicLevel" value="PhD" onchange="updateSummary()">
+                            <span class="radio-text">PhD</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="references">Number of references</label>
+                    <input type="number" id="references" name="references" min="0" onchange="updateSummary()">
+                </div>
+
+                <div class="form-group">
+                    <label for="pageCount">Number of pages or words</label>
+                    <div class="page-control">
+                        <button type="button" onclick="changePageCount(-1)">-</button>
+                        <input type="number" id="pageCount" name="pageCount" value="1" min="1" onchange="updateSummary()">
+                        <button type="button" onclick="changePageCount(1)">+</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="spacing">Spacing</label>
+                    <div class="radio-group flex-group">
+                        <label class="radio-label">
+                            <input type="radio" name="spacing" value="Double" checked onchange="updateSummary()">
+                            <span class="radio-text">Double Spaced</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="spacing" value="Single" onchange="updateSummary()">
+                            <span class="radio-text">Single Spaced</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="urgency">Urgency</label>
+                    <input type="text" id="urgency" name="urgency" onchange="updateTotalPrice()">
+                </div>
+                
+
+                <div class="price-summary">
+                    <span>Total price: <strong id="totalPriceSummary">$0.00</strong></span>
+                    <input type="hidden" id="totalPriceInput" name="totalPrice">
+                    <button type="button" onclick="openTab(event, 'OrderPreferences')">Next step</button>
+                </div>
+            </div>
+
+            <!-- Order Preferences Tab -->
+            <div id="OrderPreferences" class="tab-content">
+                <h2>Order preferences</h2>
+
+              
+                <div class="form-group">
+                    <label for="additionalInstructions">Additional instructions</label>
+                    <textarea id="additionalInstructions" name="additionalInstructions" onchange="updateSummary()"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Additional services</label>
+                    <div class="checkbox-group flex-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="additionalServices" value="PlagiarismReport" onchange="updateSummary()">
+                            <span class="checkbox-text">Plagiarism report</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Notifications</label>
+                    <div class="checkbox-group flex-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="notifications" value="OrderApproved" checked onchange="updateSummary()">
+                            <span class="checkbox-text">Order Approved</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="price-summary">
+                    <button type="button" onclick="openTab(event, 'ContactInformation')">Next step</button>
+                </div>
+            </div>
+
+            <!-- Contact Information Tab -->
+            <div id="ContactInformation" class="tab-content">
+                <h2>Contact information</h2>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required onchange="updateSummary()">
+                </div>
+
+                <div class="form-group">
+                    <label for="phoneNumber">Phone number</label>
+                    <input type="tel" id="phoneNumber" name="phoneNumber" required onchange="updateSummary()">
+                </div>
+
+                <div class="form-group">
+                    <label for="fullName">Full name</label>
+                    <input type="text" id="fullName" name="fullName" required onchange="updateSummary()">
+                </div>
+
+                <div class="form-group">
+                    <label for="preferredContactMethod">Preferred contact method</label>
+                    <select id="preferredContactMethod" name="preferredContactMethod" onchange="updateSummary()">
+                        <option value="email">Email</option>
+                        <option value="phone">Phone</option>
+                    </select>
+                </div>
+
+
+                <div class="price-summary">
+                    <button type="submit">Proceed to payment</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="right-container">
+        <form id="orderForm" method="POST" action="/order">
+            <div class="order-summary">
+                <h2>Order summary</h2>
+                <ul id="orderSummaryList">
+                    <!-- Order summary items will be dynamically added here -->
+                </ul>
+                <div class="total-price">
+                    <span>Total price: <strong id="totalPrice">$0.00</strong></span>
+                </div> 
+
+
+               <!-- <div class="price-summary">
+                    <button type="submit">Proceed to payment</button>
+                </div>
+                <div id="paypal-button-container"></div>
+
+                <div class="payment-container">
+                    <input type="text" id="phoneNumberInput" placeholder=" Phone number start with 254">
+                    <button type="button" id="mpesaButton">
+                        <img src="/pdf/2560px-M-PESA_LOGO-01.png" alt="M-Pesa Logo" class="mpesa-logo"> Pay with M-Pesa
+                    </button>
+                </div>-->
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize flatpickr
+    flatpickr("#urgency", {
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
+        minDate: new Date(new Date().getTime() + 8 * 60 * 60 * 1000), // 8 hours from now
+        onChange: function(selectedDates, dateStr, instance) {
+            updateTotalPrice(); // Call your function to update the total price
+        }
+    });
+
+    // Attach event listeners to form elements
+    document.querySelectorAll('#serviceType, #paperType, #subjectArea, #topic, #paperDetails, input[name="paperFormat"], #references, input[name="academicLevel"], #pageCount, input[name="spacing"], #additionalInstructions, input[name="additionalServices"], input[name="notifications"], #email, #phoneNumber, #fullName, #preferredContactMethod').forEach(element => {
+        element.addEventListener('change', updateSummary);
+        element.addEventListener('input', updateSummary);
+    });
+
+    // Initial summary update
+    updateSummary();
+});
+
+function updateSummary() {
+    const serviceType = document.getElementById('serviceType').value;
+    const paperType = document.getElementById('paperType').value;
+    const subjectArea = document.getElementById('subjectArea').value;
+    const topic = document.getElementById('topic').value;
+    const paperDetails = document.getElementById('paperDetails').value;
+    const paperFormat = document.querySelector('input[name="paperFormat"]:checked').value;
+    const references = document.getElementById('references').value;
+    const pageCount = document.getElementById('pageCount').value;
+    const spacing = document.querySelector('input[name="spacing"]:checked').value;
+    const urgency = document.getElementById('urgency').value;
+    const additionalInstructions = document.getElementById('additionalInstructions').value;
+    const additionalServices = Array.from(document.querySelectorAll('input[name="additionalServices"]:checked')).map(el => el.value);
+    const notifications = Array.from(document.querySelectorAll('input[name="notifications"]:checked')).map(el => el.value);
+    const email = document.getElementById('email').value;
+    const phoneNumber = document.getElementById('phoneNumber').value;
+    const fullName = document.getElementById('fullName').value;
+    const preferredContactMethod = document.getElementById('preferredContactMethod').value;
+
+    // Handle the case where no academic level is selected
+    let academicLevel = document.querySelector('input[name="academicLevel"]:checked');
+    academicLevel = academicLevel ? academicLevel.value : 'Not Specified';
+
+    // Calculate total price based on form values
+    let totalPrice = calculateTotalPrice(serviceType, paperType, subjectArea, references, academicLevel, pageCount, spacing, urgency, additionalServices);
+
+    // Update the total price in the summary
+    document.getElementById('totalPriceSummary').textContent = `$${totalPrice.toFixed(2)}`;
+    document.getElementById('totalPrice').textContent = `$${totalPrice.toFixed(2)}`;
+    document.getElementById('totalPriceInput').value = totalPrice.toFixed(2); // Update hidden input
+
+    // Update order summary list
+    const orderSummaryList = document.getElementById('orderSummaryList');
+    orderSummaryList.innerHTML = `
+        <li>Service Type: ${serviceType}</li>
+        <li>Paper Type: ${paperType}</li>
+        <li>Subject Area: ${subjectArea}</li>
+        <li>Topic: ${topic}</li>
+        <li>Paper Details: ${paperDetails}</li>
+        <li>Additional Materials: ${selectedFiles.map(file => file.name).join(', ')}</li>
+        <li>Paper Format: ${paperFormat}</li>
+        <li>References: ${references}</li>
+        <li>Academic Level: ${academicLevel}</li>
+        <li>Page Count: ${pageCount}</li>
+        <li>Spacing: ${spacing}</li>
+        <li>Urgency: ${urgency}</li>
+        <li>Additional Instructions: ${additionalInstructions}</li>
+        <li>Additional Services: ${additionalServices.join(', ')}</li>
+        <li>Notifications: ${notifications.join(', ')}</li>
+        <li>Email: ${email}</li>
+        <li>Phone Number: ${phoneNumber}</li>
+        <li>Full Name: ${fullName}</li>
+        <li>Preferred Contact Method: ${preferredContactMethod}</li>
+    `;
+}
+
+
+
+
+function calculateTotalPrice(serviceType, paperType, subjectArea, references, academicLevel, pageCount, spacing, urgency, additionalServices) {
+    let basePrice;
+
+    // Set base price based on academic level and urgency
+    switch (academicLevel) {
+        case 'Masters':
+        case 'PhD':
+            basePrice = 20;
+            break;
+        default:
+            basePrice = 18;
+            break;
+    }
+
+    let totalPrice = basePrice * pageCount; // Calculate base total price
+
+    // Adjust for urgency
+    const urgencyMultiplier = getUrgencyMultiplier(new Date(urgency));
+    totalPrice *= urgencyMultiplier;
+
+    // Adjust for additional services
+    additionalServices.forEach(service => {
+        if (service === 'PlagiarismReport') {
+            totalPrice += 0.05; // Example additional cost
+        }
+    });
+
+    return totalPrice;
+}
+
+function getUrgencyMultiplier(deadline) {
+    const now = new Date();
+    const hoursDiff = Math.ceil((deadline - now) / (1000 * 60 * 60));
+
+    if (hoursDiff <= 8) return 2.0;
+    if (hoursDiff <= 24) return 1.75;
+    if (hoursDiff <= 48) return 1.5;
+    if (hoursDiff <= 72) return 1.4;
+    if (hoursDiff <= 168) return 1.3;
+    if (hoursDiff <= 336) return 1.2;
+    if (hoursDiff <= 504) return 1.15;
+    if (hoursDiff <= 672) return 1.1;
+    return 1.05;
+}
+
+function changePageCount(delta) {
+    const pageCountInput = document.getElementById('pageCount');
+    let pageCount = parseInt(pageCountInput.value) || 1;
+    pageCount = Math.max(1, pageCount + delta);
+    pageCountInput.value = pageCount;
+    updateSummary();
+}
+
+/* function calculateTotalPrice(serviceType, paperType, subjectArea, references, academicLevel, pageCount, spacing, urgencyInDays, additionalServices) {
+    let basePrice;
+
+    // Set base price based on academic level and urgency
+    switch (academicLevel) {
+        case 'Masters':
+        case 'PhD':
+            if (urgencyInDays <= 1) {
+                basePrice = 25; // 24 hours
+            } else if (urgencyInDays <= 7) {
+                basePrice = 20; // 1 week
+            } else {
+                basePrice = 20; // Default for more than 1 week
+            }
+            break;
+        default:
+            if (urgencyInDays <= 1) {
+                basePrice = 20; // 24 hours
+            } else if (urgencyInDays <= 7) {
+                basePrice = 18; // 1 week
+            } else {
+                basePrice = 18; // Default for more than 1 week
+            }
+            break;
+    }
+
+    let totalPrice = basePrice * pageCount; // Calculate base total price
+
+    // Adjust for additional services
+    additionalServices.forEach(service => {
+        if (service === 'PlagiarismReport') {
+            totalPrice += 10.00; // Example additional cost
+        }
+    });
+
+    return totalPrice;
+}
+
+function changePageCount(delta) {
+    const pageCountInput = document.getElementById('pageCount');
+    let pageCount = parseInt(pageCountInput.value) || 1;
+    pageCount = Math.max(1, pageCount + delta);
+    pageCountInput.value = pageCount;
+    updateSummary();
+}
+ */
+document.getElementById('paperDetailsForm').addEventListener('submit', async function(event) {
+    event.preventDefault(); // Prevent the default form submission
+
+    const formData = new FormData(this);
+
+    // Collect order details from form inputs (excluding file inputs)
+    const orderDetails = {};
+    formData.forEach((value, key) => {
+        if (key !== 'additionalMaterials') { // Exclude file inputs from this object
+            orderDetails[key] = value;
+        }
+    });
+
+    // Save order details in sessionStorage
+    sessionStorage.setItem('orderSummary', JSON.stringify(orderDetails));
+
+    // Append additional materials (files) to FormData separately if any
+    const additionalMaterialsInput = document.getElementById('additionalMaterials');
+    const files = additionalMaterialsInput ? additionalMaterialsInput.files : null;
+
+    if (files && files.length > 0) {
+        for (let i = 0; i < files.length; i++) {
+            formData.append('additionalMaterials', files[i]);
+        }
+    }
+
+    try {
+        const response = await fetch('/order', {
+            method: 'POST',
+            // Don't set 'Content-Type' header to allow boundary to be set automatically
+            body: formData, // Send FormData directly
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            sessionStorage.setItem('orderId', data._id);
+            // Redirect to the order summary page
+            window.location.href = '/order-summary';
+        } else {
+            console.error('Failed to create order:', data.message);
+        }
+    } catch (error) {
+        console.error('Error creating order:', error);
+    }
+});
+
+    
+let selectedFiles = []; // Ensure this is defined
+
+function handleFiles(files) {
+    const fileList = document.getElementById('fileList');
+
+    // Convert FileList to an array
+    const newFiles = Array.from(files);
+
+    // Check if adding these files exceeds the limit of 12
+    if (selectedFiles.length + newFiles.length > 12) {
+        alert('You can only add up to 12 files.');
+        return;
+    }
+
+    selectedFiles = selectedFiles.concat(newFiles);
+    updateFileList();
+}
+
+function updateFileList() {
+    const fileList = document.getElementById('fileList');
+    fileList.innerHTML = ''; // Clear existing list
+
+    selectedFiles.forEach((file, index) => {
+        const listItem = document.createElement('li');
+
+        const removeButton = document.createElement('span');
+        removeButton.textContent = '✘';
+        removeButton.classList.add('remove-file');
+        removeButton.onclick = () => removeFile(index);
+
+        const fileName = document.createTextNode(file.name);
+
+        listItem.appendChild(removeButton);
+        listItem.appendChild(fileName);
+        fileList.appendChild(listItem);
+    });
+
+    updateSummary(); // Update summary to include the additional materials
+}
+
+function removeFile(index) {
+    selectedFiles.splice(index, 1);
+    updateFileList(); 
+} 
+</script>
+
+    
+<%- include('partials/footer') %>

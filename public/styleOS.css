@@ -1,0 +1,168 @@
+  /* Add your CSS styles here */
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.order-summary-container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    background: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.order-summary-container h2 {
+    margin-top: 0;
+    text-align: center;
+}
+
+.order-summary-container ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.order-summary-container ul li {
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.order-summary-container .total-price {
+    margin-top: 20px;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.order-summary-container .payment-container {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.order-summary-container .payment-container input {
+    padding: 10px;
+    font-size: 16px;
+    margin-right: 10px;
+    width: 100%;
+}
+
+.order-summary-container .payment-container button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+}
+
+.order-summary-container .payment-container button img.mpesa-logo {
+    height: 20px;
+    margin-right: 10px;
+}
+
+.order-summary-container .payment-container button:hover {
+    background-color: #45a049;
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+    .order-summary-container {
+        padding: 15px;
+        margin: 30px auto;
+    }
+
+    .order-summary-container h2 {
+        font-size: 1.5em;
+    }
+
+    .order-summary-container ul li {
+        padding: 8px 0;
+        font-size: 0.9em;
+    }
+
+    .order-summary-container .total-price {
+        font-size: 18px;
+    }
+
+    .order-summary-container .payment-container input {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    .order-summary-container .payment-container button {
+        font-size: 14px;
+        padding: 8px 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .order-summary-container {
+        padding: 10px;
+        margin: 20px auto;
+    }
+
+    .order-summary-container h2 {
+        font-size: 1.2em;
+    }
+
+    .order-summary-container ul li {
+        padding: 5px 0;
+        font-size: 0.8em;
+    }
+
+    .order-summary-container .total-price {
+        font-size: 16px;
+    }
+
+    .order-summary-container .payment-container input {
+        font-size: 12px;
+        padding: 6px;
+    }
+
+    .order-summary-container .payment-container button {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+}
+
+#phoneNumberInput {
+    padding: 10px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+    box-sizing: border-box; /* Ensures padding and border are included in the width */
+}
+
+#mpesaButton {
+    background-color: #2f802f;
+    color: white;
+    font-size: 16px;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box; /* Ensures padding and border are included in the width */
+}
+
+#mpesaButton:hover {
+    background-color: #2a8a1b;
+}
+
+.mpesa-logo {
+    height: 35px;
+    margin-right: 10px;
+}
